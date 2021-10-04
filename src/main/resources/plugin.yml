@@ -1,0 +1,18 @@
+name: Utils
+version: @version@
+main: com.itiscaleb.utils.Utils
+api-version: 1.16
+authors: [ ItisCaleb ]
+commands:
+  utilrule:
+    description: Some useful utils
+    usage: /utilrule <something>
+    permission: admin
+  ptitle:
+    description: Title commands
+    usage: /ptitle <player> <title>
+    permission: admin
+  sitem:
+    description: Special Item commands
+    usage: /sitem <item name>
+    permission: admin
