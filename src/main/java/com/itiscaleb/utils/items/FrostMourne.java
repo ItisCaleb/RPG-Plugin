@@ -1,9 +1,7 @@
 package com.itiscaleb.utils.items;
 
 import com.destroystokyo.paper.ParticleBuilder;
-import com.itiscaleb.utils.ISpecialItems;
 import com.itiscaleb.utils.Utils;
-import net.kyori.adventure.text.Component;
 
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
@@ -25,23 +23,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class FrostMourne implements ISpecialItems {
+public class FrostMourne extends SpecialWeapon {
 
-    static List<Component> Lore = new ArrayList<>();
-
-    static {
-        Lore.add(Component.text("§c劍身上刻著的詭異符文微微的發著藍光"));
-        Lore.add(Component.text("§c劍鞘上的空洞雙眼正凝視著你"));
-        Lore.add(Component.text("§c當你握著這把劍時"));
-        Lore.add(Component.text("§c你可以感受到蘊含其中的冰霜與死亡魔力"));
-        Lore.add(Component.text("§c就如同踏入死者的國度一般"));
-        Lore.add(Component.text("§c與此同時，你也感受到一股強大的力量"));
-        Lore.add(Component.text("§c正在嘗試與你對話..."));
-        Lore.add(Component.text("§e-------------------------"));
+    public FrostMourne(ItemStack item) {
+        super(item);
+        addSkillFunc("北裂境之怒", this::buildBridge);
+        addSkillFunc("凜風衝擊", this::frostWave);
     }
 
-    @Override
-    public void rightClickEvent(Player p, ItemStack stack) {
+
+
+
+    void frostWave(Player p){
         Location loc = p.getLocation();
         Particle particle = new ParticleBuilder(Particle.SNOWBALL)
                 .location(loc)
@@ -53,22 +46,8 @@ public class FrostMourne implements ISpecialItems {
         effect.setVelocity(loc.getDirection().multiply(20));
     }
 
-    @Override
-    public void shiftRightClickEvent(Player p, ItemStack stack) {
-        NamespacedKey cooldown = new NamespacedKey(Utils.getInstance(), "cooldown");
-        ItemMeta meta = stack.getItemMeta();
-        long lasttime = meta.getPersistentDataContainer().get(cooldown, PersistentDataType.LONG);
-        long time = System.currentTimeMillis();
-        if (time - lasttime > 1000 * 60 * 10) {
-            calIce(p);
-            meta.getPersistentDataContainer().set(cooldown, PersistentDataType.LONG, time);
-            stack.setItemMeta(meta);
-            p.sendMessage("巫妖王的恐怖力量在你面前展現...");
-        } else p.sendMessage("冷卻時間還有" + (60 * 10 - (time - lasttime) / 1000) + "秒");
-    }
 
-
-    void calIce(Player p) {
+    void buildBridge(Player p) {
         Location loc = p.getLocation();
         Vector face = p.getLocation().getDirection().setY(0);
         List<Location> locationList = new ArrayList<>();
@@ -108,7 +87,6 @@ public class FrostMourne implements ISpecialItems {
         PersistentDataContainer pdata = meta.getPersistentDataContainer();
         int count = pdata.get(souls, PersistentDataType.INTEGER) + 1;
         pdata.set(souls, PersistentDataType.INTEGER, count);
-        meta.lore(getLore(count));
         Integer atk = calculateATK(count);
         if (atk > calculateATK(count - 1)) {
             player.sendMessage("§c霜之哀傷的飢渴暫時得到了滿足...");
@@ -126,34 +104,6 @@ public class FrostMourne implements ISpecialItems {
         return (int) (Math.log10(souls) / Math.log10(5));
     }
 
-    @Override
-    public ItemStack getItem() {
-        ItemStack item = new ItemStack(Material.NETHERITE_SWORD);
-        ItemMeta meta = item.getItemMeta();
-        PersistentDataContainer pdata = meta.getPersistentDataContainer();
-        meta.displayName(Component.text("§6§l霜之哀傷"));
-        meta.setUnbreakable(true);
-        meta.lore(getLore(0));
-        meta.setCustomModelData(1);
-        NamespacedKey weapon = new NamespacedKey(Utils.getInstance(), "weapon-type");
-        NamespacedKey cooldown = new NamespacedKey(Utils.getInstance(), "cooldown");
-        NamespacedKey souls = new NamespacedKey(Utils.getInstance(), "souls");
-        pdata.set(weapon, PersistentDataType.STRING, this.getClass().getName());
-        pdata.set(cooldown, PersistentDataType.LONG, 0L);
-        pdata.set(souls, PersistentDataType.INTEGER, 0);
-        AttributeModifier attack = new AttributeModifier(UUID.randomUUID(), "attack", 7, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HAND);
-        AttributeModifier speed = new AttributeModifier(UUID.randomUUID(), "speed", -2.4, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HAND);
-        meta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, attack);
-        meta.addAttributeModifier(Attribute.GENERIC_ATTACK_SPEED, speed);
-        item.setItemMeta(meta);
-        return item;
-    }
-
-    List<Component> getLore(int count) {
-        List<Component> lore = new ArrayList<>(Lore);
-        lore.add(Component.text("§e靈魂數量:§c§l" + count));
-        return lore;
-    }
 
     void speak(LivingEntity p) {
         String[] text = {

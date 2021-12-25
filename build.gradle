@@ -1,14 +1,11 @@
-import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
     id 'java'
 }
 
 group = 'com.itiscaleb'
-version = '1.0'
+version = '1.2'
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
 
 repositories {
     mavenCentral()
@@ -20,18 +17,22 @@ repositories {
         name = 'sonatype'
         url = 'https://oss.sonatype.org/content/groups/public/'
     }
+    maven {
+        url 'https://hub.spigotmc.org/nexus/content/repositories/public/'
+    }
 }
+
 
 
 dependencies {
-    compileOnly 'com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT'
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    implementation 'junit:junit:4.13.2'
+    compileOnly("io.papermc.paper:paper-api:1.18.1-R0.1-SNAPSHOT")
+    testImplementation 'com.github.seeseemelk:MockBukkit-v1.17:1.13.0'
 }
 
 
 
-processResources {
-    from(sourceSets.main.resources.srcDirs) {
-        filter ReplaceTokens, tokens: [version: version]
-    }
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }
+

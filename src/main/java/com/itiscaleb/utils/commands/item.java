@@ -1,12 +1,17 @@
 package com.itiscaleb.utils.commands;
 
 import com.itiscaleb.utils.items.FrostMourne;
+import com.itiscaleb.utils.items.Hammer_of_the_Naaru;
+import com.itiscaleb.utils.items.SpecialWeapon;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Locale;
 
 public class item implements CommandExecutor {
     @Override
@@ -18,11 +23,15 @@ public class item implements CommandExecutor {
         if(args.length>=2){
             Player p = (Player)sender;
             if(args[0].equalsIgnoreCase("get")){
-                if(args[1].equalsIgnoreCase("frostmourne")){
-                    p.getInventory().addItem(new FrostMourne().getItem());
-                    p.sendMessage(Component.text("霜之哀傷"));
-                    return true;
+                SpecialWeapon stack = SpecialWeapon.getWeapon(args[1]);
+                if(stack==null) {
+                    p.sendMessage("沒有這把武器");
+                    return false;
+                }else {
+                    p.getInventory().addItem(stack.getItem());
+                    p.sendMessage(stack.getItem().displayName());
                 }
+                return true;
             }else if(args[0].equalsIgnoreCase("set")){
                 p.sendMessage("測試中");
             }

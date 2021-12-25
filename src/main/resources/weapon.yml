@@ -1,0 +1,39 @@
+Hammer_of_the_Naaru:
+  displayName: "那魯之錘"
+  lore: |
+    §e溫暖的光輝從武器之中流淌出來
+    §e悅耳的旋律在你耳邊旋繞
+    §e神聖的能量充斥著你的身軀
+
+    §e§l你感覺你無所不能"
+  attr:
+    atk: 13
+    atk_speed: 1
+  skills:
+    - name: 黎明曙光
+      cd: 10.0
+    - name: 聖盾術
+      cd: 80.0
+
+FrostMourne:
+  displayName: "霜之哀傷"
+  lore: |
+    §c劍身上刻著的詭異符文微微的發著藍光
+    §c劍鞘上的空洞雙眼正凝視著你
+    §c當你握著這把劍時
+    §c你可以感受到蘊含其中的冰霜與死亡魔力
+    §c就如同踏入死者的國度一般
+    §c與此同時，你也感受到一股強大的力量
+    §c正在嘗試與你對話...
+    §e-------------------------
+  # §e靈魂數量:§c§l%d
+  attr:
+    atk: 7
+    atk_speed: 1.6
+  resources:
+    souls: INTEGER
+  skills:
+    - name: 凜風衝擊
+      cd: 10.0
+    - name: 北裂境之怒
+      cd: 300.0
