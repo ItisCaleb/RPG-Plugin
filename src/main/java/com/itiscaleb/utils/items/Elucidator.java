@@ -90,7 +90,9 @@ public class Elucidator extends SpecialWeapon{
                         Vector u = new Vector(A.getX()-O.getX(),0,A.getZ()-O.getZ());
                         double angle = vec.angle(u);
                         if(r<radius && -Math.PI/2 <= angle && angle <= Math.PI/2){
+                            living.setNoDamageTicks(0);
                             living.damage(5);
+                            living.setNoDamageTicks(10);
                         }
                     }
                 }

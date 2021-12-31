@@ -55,7 +55,7 @@ Elucidator:
     - name: 垂直四方斬
       cd: 3.0
     - name: 星爆氣流斬
-      cd: 30.0
+      cd: 60.0
 
 Dark_Repulser:
   displayName: "逐暗者"
@@ -73,4 +73,4 @@ Dark_Repulser:
     - name: 音速衝刺
       cd: 5.0
     - name: 星爆氣流斬
-      cd: 30.0
+      cd: 60.0
