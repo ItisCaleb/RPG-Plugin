@@ -6,9 +6,7 @@ import com.itiscaleb.utils.commands.utils;
 import com.itiscaleb.utils.events.ExplodeEvent;
 import com.itiscaleb.utils.events.JoinEvent;
 import com.itiscaleb.utils.events.SpecialItemEvents;
-import com.itiscaleb.utils.items.FrostMourne;
-import com.itiscaleb.utils.items.Hammer_of_the_Naaru;
-import com.itiscaleb.utils.items.SpecialWeapon;
+import com.itiscaleb.utils.items.*;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -60,8 +58,10 @@ public final class Utils extends JavaPlugin {
     }
 
     public void loadSpecialWeapons(){
-        SpecialWeapon.registerWeapon(new FrostMourne(new ItemStack(Material.NETHERITE_SWORD)));
-        SpecialWeapon.registerWeapon(new Hammer_of_the_Naaru(new ItemStack(Material.DIAMOND_AXE)));
+        SpecialWeapon.registerWeapon(new FrostMourne());
+        SpecialWeapon.registerWeapon(new Hammer_of_the_Naaru());
+        SpecialWeapon.registerWeapon(new Dark_Repulser());
+        SpecialWeapon.registerWeapon(new Elucidator());
     }
 
     public static Utils getInstance() {

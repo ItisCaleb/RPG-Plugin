@@ -25,8 +25,8 @@ import java.util.UUID;
 
 public class FrostMourne extends SpecialWeapon {
 
-    public FrostMourne(ItemStack item) {
-        super(item);
+    public FrostMourne() {
+        super(new ItemStack(Material.NETHERITE_SWORD));
         addSkillFunc("北裂境之怒", this::buildBridge);
         addSkillFunc("凜風衝擊", this::frostWave);
     }
@@ -34,7 +34,7 @@ public class FrostMourne extends SpecialWeapon {
 
 
 
-    void frostWave(Player p){
+    boolean frostWave(Player p){
         Location loc = p.getLocation();
         Particle particle = new ParticleBuilder(Particle.SNOWBALL)
                 .location(loc)
@@ -44,10 +44,11 @@ public class FrostMourne extends SpecialWeapon {
         AreaEffectCloud effect = (AreaEffectCloud) p.getWorld().spawnEntity(loc, EntityType.AREA_EFFECT_CLOUD);
         effect.setParticle(particle);
         effect.setVelocity(loc.getDirection().multiply(20));
+        return true;
     }
 
 
-    void buildBridge(Player p) {
+    boolean buildBridge(Player p) {
         Location loc = p.getLocation();
         Vector face = p.getLocation().getDirection().setY(0);
         List<Location> locationList = new ArrayList<>();
@@ -68,6 +69,7 @@ public class FrostMourne extends SpecialWeapon {
                 }
             }
         }.runTask(Utils.getInstance());
+        return true;
     }
 
     void setIce(World world, Location temp) {

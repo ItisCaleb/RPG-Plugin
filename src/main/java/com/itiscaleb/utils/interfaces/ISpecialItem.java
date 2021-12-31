@@ -13,6 +13,6 @@ public interface ISpecialItem {
      ItemStack getItem();
 
      interface Callback{
-          void callback(Player player);
+          boolean callback(Player player);
      }
 }

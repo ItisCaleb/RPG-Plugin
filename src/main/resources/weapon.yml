@@ -5,13 +5,15 @@ Hammer_of_the_Naaru:
     §e悅耳的旋律在你耳邊旋繞
     §e神聖的能量充斥著你的身軀
 
-    §e§l你感覺你無所不能"
+    §e§l你感覺你無所不能
   attr:
     atk: 13
     atk_speed: 1
   skills:
     - name: 黎明曙光
-      cd: 10.0
+      cd: 20.0
+    - name: 治療禱言
+      cd: 20.0
     - name: 聖盾術
       cd: 80.0
 
@@ -37,3 +39,38 @@ FrostMourne:
       cd: 10.0
     - name: 北裂境之怒
       cd: 300.0
+
+Elucidator:
+  displayName: "闡釋者"
+  lore: |
+    §b由50層boss所掉落的黑色魔劍
+    §b外表十分樸素，沒有多餘的裝飾
+    §b但劍身深邃的黑暗不斷吸引著你的目光
+
+    §6§l可與逐暗者共同施放星爆氣流斬
+  attr:
+    atk: 10
+    atk_speed: 2.2
+  skills:
+    - name: 垂直四方斬
+      cd: 3.0
+    - name: 星爆氣流斬
+      cd: 30.0
+
+Dark_Repulser:
+  displayName: "逐暗者"
+  lore: |
+    §b一把非常華麗的水晶劍
+    §b劍身散發出十分炫目的白色
+    §b劍柄則是帶點青色的銀
+    §b以一把劍來說，實用性沒那麼高
+
+    §6§l可與闡釋者共同施放星爆氣流斬
+  attr:
+    atk: 7
+    atk_speed: 2.2
+  skills:
+    - name: 音速衝刺
+      cd: 5.0
+    - name: 星爆氣流斬
+      cd: 30.0

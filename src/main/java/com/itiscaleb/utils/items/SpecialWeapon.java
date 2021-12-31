@@ -16,23 +16,29 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.*;
 
 public abstract class SpecialWeapon implements ISpecialItem {
     private final ConfigurationSection config;
+    private String hash;
     protected ItemStack item;
     protected String displayName;
     protected String lore;
+
     protected HashMap<String, Skill> skills = new HashMap<>();
     private final HashMap<String, Callback> skillFunc = new HashMap<>();
 
     static HashMap<String, SpecialWeapon> WEAPON_MAP = new HashMap<>();
 
-    private static class Skill{
-        int id;
-        String name;
-        double cd;
+    public static class Skill{
+        public int id;
+        public String name;
+        public double cd;
         Skill(int id,String name,double cd){
             this.id = id;
             this.name = name;
@@ -52,19 +58,17 @@ public abstract class SpecialWeapon implements ISpecialItem {
         return WEAPON_MAP.getOrDefault(name, null);
     }
 
-    static long secondToMilis(double second) {
-        return (long) (second * 1000);
-    }
-
     public SpecialWeapon(ItemStack item) {
         String name = this.getClass().getSimpleName();
         this.config = Configs.getWeaponAttr().getConfigurationSection(name);
         this.item = item;
+        Utils.getInstance().getLogger().info("Init weapon " + name);
         if (this.config == null) {
             Utils.Log("你還沒定義這把武器的屬性");
             return;
         }
         this.displayName = config.getString("displayName");
+        this.hash = this.displayName;
         this.lore = config.getString("lore");
         setBaseMeta();
     }
@@ -76,7 +80,9 @@ public abstract class SpecialWeapon implements ISpecialItem {
         //use index to track individual cool down
         for (Map<?,?> map: skill) {
             String name = (String) map.get("name");
-            this.skills.put(name, new Skill(i,name, (double) map.get("cd")));
+            //append skill to hash
+            hash=hash.concat(":"+name);
+            skills.put(name, new Skill(i,name, (double) map.get("cd")));
             setPersistentData(meta,i+"-cd","Long",0L);
             i++;
         }
@@ -90,22 +96,48 @@ public abstract class SpecialWeapon implements ISpecialItem {
         skillFunc.put(name, cb);
     }
 
+    @NotNull
+    protected Skill findSkillByName(String name){
+        for (Skill skill : skills.values()){
+            if(skill.name.equals(name)){
+                return skill;
+            }
+        }
+        return null;
+    }
+
     private void setBaseMeta() {
         String name = this.getClass().getSimpleName();
         ItemMeta meta = item.getItemMeta();
+
         meta.displayName(Component.text("§6§l" + displayName));
         meta.setCustomModelData(1);
         meta.setUnbreakable(true);
+
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+
         setSkills(meta);
+        setDefaultAttribute(meta);
+        hash = calHash(hash);
+
         setPersistentData(meta, "weapon-type", "String", name);
         setPersistentData(meta, "skill", "String", skills.keySet().toArray()[0]);
         setPersistentData(meta, "lastChange", "Long", 0L);
-        setDefaultAttribute(meta);
+        setPersistentData(meta, "hash","String",hash);
+
         setLore(meta);
         item.setItemMeta(meta);
+    }
+    public String calHash(String input){
+        try {
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            byte[] resultDigest = digest.digest(input.getBytes(StandardCharsets.UTF_8));
+            return HexFormat.of().formatHex(resultDigest);
+        }catch (Exception ignore){
+            return "";
+        }
     }
 
 
@@ -114,6 +146,7 @@ public abstract class SpecialWeapon implements ISpecialItem {
         if (attr == null) return;
         for (String name : attr.getKeys(false)) {
             double value = attr.getDouble(name);
+            hash=hash.concat(":"+name+"."+value);
             switch (name) {
                 case "atk" -> setAttributeAdd(meta,Attribute.GENERIC_ATTACK_DAMAGE, "attack", value);
                 case "atk_speed" -> setAttributeAdd(meta,Attribute.GENERIC_ATTACK_SPEED, "attack_speed", Math.max(value - 4, -4));
@@ -195,8 +228,9 @@ public abstract class SpecialWeapon implements ISpecialItem {
                 : Collections.emptySet();
         for (Attribute attr : key) {
             for (AttributeModifier modifier: meta.getAttributeModifiers().get(attr)){
+                String name = modifier.getName();
                 double amount = modifier.getAmount();
-                switch (modifier.getName()) {
+                switch (name) {
                     case "attack" -> components.add(Component.text(" §2" + amount + " 攻擊傷害"));
                     case "attack_speed" -> components.add(Component.text(" §2" + (4+amount) + " 攻擊速度"));
                     case "health" -> components.add(Component.text(" §2+" + amount + " 點最大生命值"));
@@ -240,11 +274,21 @@ public abstract class SpecialWeapon implements ISpecialItem {
     public void rightClickEvent(Player player, ItemStack stack) {
         ItemMeta meta = stack.getItemMeta();
         Skill skill = getCurrentSkill(meta);
+        String itemHash = (String) getPersistentData(meta,"hash","String");
+        if(itemHash == null || !itemHash.equals(hash)){
+            meta = this.item.getItemMeta();
+            player.sendMessage("§a你的武器已更新為最新版本");
+        }
         long time = System.currentTimeMillis();
         long lasttime = (long) getPersistentData(meta, skill.id+"-cd", "Long");
         //execute skill
         if (time - lasttime >= secondToMilis(skill.cd)) {
-            skillFunc.get(skill.name).callback(player);
+            //cast skill anc check if cast success
+            boolean success = skillFunc.get(skill.name).callback(player);
+            if(!success){
+                player.sendMessage("§e§l" + skill.name + "§r§a施放失敗" );
+                return;
+            }
             //set new skill timer
             setPersistentData(meta, skill.id+"-cd", "Long", time);
             stack.setItemMeta(meta);
@@ -256,6 +300,11 @@ public abstract class SpecialWeapon implements ISpecialItem {
     @Override
     public void shiftRightClickEvent(Player player, ItemStack stack) {
         ItemMeta meta = stack.getItemMeta();
+        String itemHash = (String) getPersistentData(meta,"hash","String");
+        if(itemHash == null || !itemHash.equals(hash)){
+            meta = this.item.getItemMeta();
+            player.sendMessage("§a你的武器已更新為最新版本");
+        }
         long time = System.currentTimeMillis();
         long lasttime = (long) getPersistentData(meta, "lastChange", "Long");
         if (time - lasttime >= secondToMilis(0.5)) {
@@ -274,10 +323,14 @@ public abstract class SpecialWeapon implements ISpecialItem {
     }
 
     @Override
-    abstract public void killEvent(LivingEntity e, LivingEntity killer, ItemStack stack);
+    public void killEvent(LivingEntity e, LivingEntity killer, ItemStack stack){}
 
     @Override
     public ItemStack getItem() {
         return item;
+    }
+
+    static long secondToMilis(double second) {
+        return (long) (second * 1000);
     }
 }

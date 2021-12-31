@@ -17,9 +17,9 @@ public class TabComplete implements TabCompleter {
         switch (command.getName()){
             case "sitem":
                 if (args.length==1){
-                    list.addAll(Arrays.asList("set", "get"));
+                    list.addAll(Arrays.asList("set", "get","show"));
                 }else if (args.length==2 && args[0].equalsIgnoreCase("get")){
-                    list.addAll(Arrays.asList("FrostMourne","Hammer_of_the_Naaru"));
+                    list.addAll(Arrays.asList("FrostMourne","Hammer_of_the_Naaru","Elucidator","Dark_Repulser"));
                 }
                 break;
             case "utilrule":

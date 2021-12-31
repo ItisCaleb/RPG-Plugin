@@ -20,6 +20,11 @@ public class item implements CommandExecutor {
             sender.sendMessage("玩家才能使用此指令");
             return true;
         }
+        if(args[0].equalsIgnoreCase("show")){
+            Player p = (Player)sender;
+            p.getServer().sendMessage(p.getInventory().getItemInMainHand().displayName());
+            return true;
+        }
         if(args.length>=2){
             Player p = (Player)sender;
             if(args[0].equalsIgnoreCase("get")){
