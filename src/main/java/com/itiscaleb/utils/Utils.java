@@ -6,16 +6,13 @@ import com.itiscaleb.utils.commands.utils;
 import com.itiscaleb.utils.events.ExplodeEvent;
 import com.itiscaleb.utils.events.JoinEvent;
 import com.itiscaleb.utils.events.SpecialItemEvents;
-import com.itiscaleb.utils.items.*;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.PluginDescriptionFile;
+import com.itiscaleb.utils.items.weapons.*;
+import com.itiscaleb.utils.items.weapons.starburst.Blue_Rose;
+import com.itiscaleb.utils.items.weapons.starburst.Dark_Repulser;
+import com.itiscaleb.utils.items.weapons.starburst.Elucidator;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.plugin.java.JavaPluginLoader;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 public final class Utils extends JavaPlugin {
 
@@ -62,6 +59,7 @@ public final class Utils extends JavaPlugin {
         SpecialWeapon.registerWeapon(new Hammer_of_the_Naaru());
         SpecialWeapon.registerWeapon(new Dark_Repulser());
         SpecialWeapon.registerWeapon(new Elucidator());
+        SpecialWeapon.registerWeapon(new Blue_Rose());
     }
 
     public static Utils getInstance() {

@@ -1,10 +1,10 @@
-package com.itiscaleb.utils.items;
+package com.itiscaleb.utils.items.weapons.starburst;
 
 import com.destroystokyo.paper.ParticleBuilder;
 import com.itiscaleb.utils.Utils;
+import com.itiscaleb.utils.items.weapons.SpecialWeapon;
 import org.bukkit.Color;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -14,43 +14,41 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-public class Elucidator extends SpecialWeapon{
+import java.util.ArrayList;
+import java.util.Arrays;
 
-    public Elucidator() {
-        super(new ItemStack(Material.NETHERITE_SWORD));
+public class Starburst_TwinBlade extends SpecialWeapon {
+
+    static ArrayList<String> swords = new ArrayList<>(Arrays.asList("Dark_Repulser", "Elucidator")) ;
+
+    public Starburst_TwinBlade(ItemStack item) {
+        super(item);
         addSkillFunc("星爆氣流斬",this::castStarburstStream);
-        addSkillFunc("垂直四方斬",this::VerticalSquare);
-    }
-
-    boolean VerticalSquare(Player player){
-        Location loc = player.getLocation();
-        new ParticleBuilder(Particle.SWEEP_ATTACK)
-                .location(loc.add(loc.getDirection().setY(0).multiply(2)).add(0,1.5,0))
-                .receivers(10)
-                .count(10)
-                .spawn();
-        return true;
     }
 
     boolean castStarburstStream(Player player){
         ItemMeta off = player.getInventory().getItemInOffHand().getItemMeta();
         if (off==null){
-            player.sendMessage("§c你需要逐暗者才能施放這個技能!");
+            player.sendMessage("§c你需要另一把星爆雙刀才能施放這個技能!");
             return false;
         }
         String offType = (String) getPersistentData(off,"weapon-type","String");
         //check main hand and off hand
-        if (offType !=null && offType.equals("Dark_Repulser")){
-            StarburstStream(player);
-            setPersistentData(off,findSkillByName("星爆氣流斬").id+"-cd","Long",System.currentTimeMillis());
-            player.sendMessage("§bStarburst Stream!");
+        if (offType !=null && swords.contains(offType)){
+            SpecialWeapon offWeapon = SpecialWeapon.getWeapon(offType);
+            setPersistentData(off,offWeapon.findSkillByName("星爆氣流斬").id+"-cd","Long",System.currentTimeMillis());
+            player.getInventory().getItemInOffHand().setItemMeta(off);
+            double mainAtk = this.getAttribute("atk");
+            double offAtk = offWeapon.getAttribute("atk");
+            StarburstStream(player,(mainAtk+offAtk)/3);
+            player.chat("§bStarburst Stream!");
             return true;
         }else {
-            player.sendMessage("§c你需要逐暗者才能施放這個技能!");
+            player.sendMessage("§c你需要另一把星爆雙刀才能施放這個技能!");
             return false;
         }
     }
-    void StarburstStream(Player player){
+    void StarburstStream(Player player,double atk){
         double radius = 4;
         Location O = player.getLocation();
         Vector vec = O.getDirection().setY(0).multiply(radius/2);
@@ -62,7 +60,7 @@ public class Elucidator extends SpecialWeapon{
         ParticleBuilder particle = new ParticleBuilder(Particle.REDSTONE)
                 .location(O.clone().add(vec).add(0,1,0))
                 .receivers(10)
-                .offset(5,5,5)
+                .offset(4,1.5,4)
                 .color(Color.BLUE)
                 .count(300);
         /*
@@ -71,7 +69,7 @@ public class Elucidator extends SpecialWeapon{
         O為玩家位置，面向角度為θ
         -π/2<θ'-θ<π/2 && |O-A|<r
          */
-        BukkitRunnable runnable = new BukkitRunnable(){
+        new BukkitRunnable(){
             int count = 0;
             @Override
             public void run() {
@@ -83,7 +81,7 @@ public class Elucidator extends SpecialWeapon{
                 player.sendMessage("§e"+count+"連擊!");
                 sweep.spawn();
                 particle.spawn();
-                for (Entity entity: player.getNearbyEntities(6,2,6)){
+                for (Entity entity: O.getNearbyEntities(5,2,5)){
                     if(entity instanceof LivingEntity living){
                         Location A = living.getLocation();
                         double r = A.distance(O);
@@ -91,13 +89,13 @@ public class Elucidator extends SpecialWeapon{
                         double angle = vec.angle(u);
                         if(r<radius && -Math.PI/2 <= angle && angle <= Math.PI/2){
                             living.setNoDamageTicks(0);
-                            living.damage(5);
+                            living.damage(atk);
+                            living.setKiller(player);
                             living.setNoDamageTicks(10);
                         }
                     }
                 }
             }
-        };
-        runnable.runTaskTimer(Utils.getInstance(),0,3);
+        }.runTaskTimer(Utils.getInstance(),0,4);
     }
 }

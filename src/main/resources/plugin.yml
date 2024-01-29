@@ -6,7 +6,7 @@ authors: [ ItisCaleb ]
 description: SMP plugin
 commands:
   utilrule:
-    description: Some useful utils
+    description: Some useful utility
     usage: /utilrule <something>
     permission: admin
   ptitle:

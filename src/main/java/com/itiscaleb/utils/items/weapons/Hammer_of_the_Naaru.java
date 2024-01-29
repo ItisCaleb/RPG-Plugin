@@ -1,9 +1,8 @@
-package com.itiscaleb.utils.items;
+package com.itiscaleb.utils.items.weapons;
 
 import com.destroystokyo.paper.ParticleBuilder;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;

@@ -12,7 +12,7 @@ public interface ISpecialItem {
      void killEvent(LivingEntity e,LivingEntity killer, ItemStack stack);
      ItemStack getItem();
 
-     interface Callback{
+     interface SkillFunction {
           boolean callback(Player player);
      }
 }

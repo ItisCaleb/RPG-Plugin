@@ -1,4 +1,4 @@
-package com.itiscaleb.utils.items;
+package com.itiscaleb.utils.items.weapons;
 
 import com.destroystokyo.paper.ParticleBuilder;
 import com.itiscaleb.utils.Utils;

@@ -1,14 +1,17 @@
 package com.itiscaleb.utils.events;
 
 import com.itiscaleb.utils.Utils;
-import com.itiscaleb.utils.items.SpecialWeapon;
+import com.itiscaleb.utils.items.weapons.SpecialWeapon;
+import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
@@ -73,6 +76,19 @@ public class SpecialItemEvents implements Listener {
                 }
             }
         }*/
+    }
+
+    //TODO: keep showing current skill
+    @EventHandler
+    public void  onPlayerChangeItem(PlayerItemHeldEvent e){
+        ItemStack item = e.getPlayer().getInventory().getItemInMainHand();
+        ItemMeta meta = item.getItemMeta();
+        if(meta != null){
+            String skill = (String) SpecialWeapon.getPersistentData(meta,"skill","String");
+            if(skill != null){
+                e.getPlayer().sendActionBar(Component.text("§a目前技能 §e§l"+skill));
+            }
+        }
     }
 
 

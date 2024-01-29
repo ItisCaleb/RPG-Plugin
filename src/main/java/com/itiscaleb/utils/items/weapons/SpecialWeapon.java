@@ -1,4 +1,4 @@
-package com.itiscaleb.utils.items;
+package com.itiscaleb.utils.items.weapons;
 
 
 import com.itiscaleb.utils.Configs;
@@ -18,7 +18,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.*;
@@ -31,7 +30,7 @@ public abstract class SpecialWeapon implements ISpecialItem {
     protected String lore;
 
     protected HashMap<String, Skill> skills = new HashMap<>();
-    private final HashMap<String, Callback> skillFunc = new HashMap<>();
+    private final HashMap<String, SkillFunction> skillFunc = new HashMap<>();
 
     static HashMap<String, SpecialWeapon> WEAPON_MAP = new HashMap<>();
 
@@ -88,16 +87,17 @@ public abstract class SpecialWeapon implements ISpecialItem {
         }
     }
 
-    protected Skill getCurrentSkill(ItemMeta meta) {
+    public Skill getCurrentSkill(ItemMeta meta) {
         return skills.get((String) getPersistentData(meta, "skill", "String"));
     }
 
-    protected void addSkillFunc(String name, Callback cb) {
+
+    public void addSkillFunc(String name, SkillFunction cb) {
         skillFunc.put(name, cb);
     }
 
     @NotNull
-    protected Skill findSkillByName(String name){
+    public Skill findSkillByName(String name){
         for (Skill skill : skills.values()){
             if(skill.name.equals(name)){
                 return skill;
@@ -130,7 +130,7 @@ public abstract class SpecialWeapon implements ISpecialItem {
         setLore(meta);
         item.setItemMeta(meta);
     }
-    public String calHash(String input){
+    private String calHash(String input){
         try {
             MessageDigest digest = MessageDigest.getInstance("MD5");
             byte[] resultDigest = digest.digest(input.getBytes(StandardCharsets.UTF_8));
@@ -139,7 +139,6 @@ public abstract class SpecialWeapon implements ISpecialItem {
             return "";
         }
     }
-
 
     private void setDefaultAttribute(ItemMeta meta) {
         ConfigurationSection attr = config.getConfigurationSection("attr");
@@ -154,6 +153,11 @@ public abstract class SpecialWeapon implements ISpecialItem {
                 case "speed" -> setAttributeAdd(meta,Attribute.GENERIC_MOVEMENT_SPEED, "speed", value);
             }
         }
+    }
+
+    public double getAttribute(String type){
+        ConfigurationSection attr = config.getConfigurationSection("attr");
+        return attr.getDouble(type);
     }
 
 
@@ -189,18 +193,6 @@ public abstract class SpecialWeapon implements ISpecialItem {
         }
     }
 
-    private void setCustomData(PersistentDataContainer pdata,String name,String type){
-        NamespacedKey key = new NamespacedKey(Utils.getInstance(), name);
-        switch (type.toLowerCase(Locale.ROOT)){
-            case "integer"->
-                    pdata.set(key, PersistentDataType.INTEGER,0);
-            case "double"->
-                    pdata.set(key,PersistentDataType.DOUBLE,0d);
-            case "long"->
-                    pdata.set(key,PersistentDataType.LONG,0L);
-            case "string"->
-                    pdata.set(key,PersistentDataType.STRING,"");
-        }
     }*/
 
     private void setLore(ItemMeta meta) {
@@ -242,14 +234,14 @@ public abstract class SpecialWeapon implements ISpecialItem {
         meta.lore(components);
     }
 
-    private void setAttributeAdd(ItemMeta meta,Attribute attr, String name, double value) {
+    public void setAttributeAdd(ItemMeta meta,Attribute attr, String name, double value) {
         AttributeModifier modifier = new AttributeModifier(UUID.randomUUID(), name, value, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlot.HAND);
         meta.addAttributeModifier(attr, modifier);
     }
 
     //TODO: attribute scalar and multiply
 
-    protected Object getPersistentData(ItemMeta meta, String name, String type) {
+    public static Object getPersistentData(ItemMeta meta, String name, String type) {
         NamespacedKey key = new NamespacedKey(Utils.getInstance(), name);
         return switch (type.toLowerCase(Locale.ROOT)) {
             case "string" -> meta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
@@ -260,7 +252,7 @@ public abstract class SpecialWeapon implements ISpecialItem {
         };
     }
 
-    protected void setPersistentData(ItemMeta meta, String name, String type, Object value) {
+    public static void setPersistentData(ItemMeta meta, String name, String type, Object value) {
         NamespacedKey key = new NamespacedKey(Utils.getInstance(), name);
         switch (type.toLowerCase(Locale.ROOT)) {
             case "string" -> meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, (String) value);
@@ -283,7 +275,7 @@ public abstract class SpecialWeapon implements ISpecialItem {
         long lasttime = (long) getPersistentData(meta, skill.id+"-cd", "Long");
         //execute skill
         if (time - lasttime >= secondToMilis(skill.cd)) {
-            //cast skill anc check if cast success
+            //cast skill and check if cast success
             boolean success = skillFunc.get(skill.name).callback(player);
             if(!success){
                 player.sendMessage("§e§l" + skill.name + "§r§a施放失敗" );

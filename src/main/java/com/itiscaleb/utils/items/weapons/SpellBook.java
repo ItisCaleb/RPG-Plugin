@@ -1,4 +1,4 @@
-package com.itiscaleb.utils.items;
+package com.itiscaleb.utils.items.weapons;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;

@@ -47,15 +47,15 @@ Elucidator:
     §b外表十分樸素，沒有多餘的裝飾
     §b但劍身深邃的黑暗不斷吸引著你的目光
 
-    §6§l可與逐暗者共同施放星爆氣流斬
+    §6§l可與另一把SAO的劍共同施放星爆氣流斬
   attr:
     atk: 10
     atk_speed: 2.2
   skills:
     - name: 垂直四方斬
-      cd: 3.0
+      cd: 10.0
     - name: 星爆氣流斬
-      cd: 60.0
+      cd: 70.0
 
 Dark_Repulser:
   displayName: "逐暗者"
@@ -65,12 +65,31 @@ Dark_Repulser:
     §b劍柄則是帶點青色的銀
     §b以一把劍來說，實用性沒那麼高
 
-    §6§l可與闡釋者共同施放星爆氣流斬
+    §6§l可與另一把SAO的劍共同施放星爆氣流斬
   attr:
-    atk: 7
-    atk_speed: 2.2
+    atk: 6
+    atk_speed: 2.0
   skills:
     - name: 音速衝刺
-      cd: 5.0
+      cd: 10.0
     - name: 星爆氣流斬
-      cd: 60.0
+      cd: 70.0
+
+Blue_Rose:
+  displayName: "藍薔薇之劍"
+  lore: |
+    §b一把由北方山脈的冰晶所誕生的劍
+    §b劍身周圍不斷散發著令人顫慄的寒氣
+    §b劍鞘上鑲嵌著一朵十分精緻的薔薇花
+    §b這把劍給你的感覺就如同孤寂的隱者
+    §b等待著命中註定之人的到來
+
+    §6§l可與另一把SAO的劍共同施放星爆氣流斬
+  attr:
+    atk: 6
+    atk_speed: 2.0
+  skills:
+    - name: 記憶解放-藍薔薇
+      cd: 50.0
+    - name: 星爆氣流斬
+      cd: 70.0

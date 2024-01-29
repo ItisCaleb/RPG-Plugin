@@ -1,17 +1,11 @@
 package com.itiscaleb.utils.commands;
 
-import com.itiscaleb.utils.items.FrostMourne;
-import com.itiscaleb.utils.items.Hammer_of_the_Naaru;
-import com.itiscaleb.utils.items.SpecialWeapon;
-import net.kyori.adventure.text.Component;
+import com.itiscaleb.utils.items.weapons.SpecialWeapon;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Locale;
 
 public class item implements CommandExecutor {
     @Override
